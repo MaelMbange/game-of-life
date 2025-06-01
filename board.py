@@ -4,10 +4,11 @@ from tkinter.ttk import *
 from cell import Cell
 
 class Board(Canvas):
-    CELLS_SIZE = 15
-    def __init__(self, master, rows=100, cols=100):
-        super().__init__(master,width=Board.CELLS_SIZE * cols,height=Board.CELLS_SIZE *rows,)
+    def __init__(self, master, rows=100, cols=100,cell_size=15):    
+        self.CELLS_SIZE = cell_size   
 
+        super().__init__(master,width=self.CELLS_SIZE * cols,height=self.CELLS_SIZE *rows,bg='black')
+        
         self.rows = rows
         self.cols = cols
         self.cells = [[Cell() for _ in range(cols)] for _ in range(rows)]
@@ -20,18 +21,18 @@ class Board(Canvas):
         for row in range(self.rows):
             for col in range(self.cols):
                 if self.cells[row][col].is_alive() :
-                    self.create_rectangle(col*Board.CELLS_SIZE , row*Board.CELLS_SIZE , 
-                                    (col+1)*Board.CELLS_SIZE , (row+1)*Board.CELLS_SIZE ,
+                    self.create_rectangle(col*self.CELLS_SIZE , row*self.CELLS_SIZE , 
+                                    (col+1)*self.CELLS_SIZE , (row+1)*self.CELLS_SIZE ,
                                     outline='darkgreen', fill='lime',activefill='lightblue')
                 else:
-                    self.create_rectangle(col*Board.CELLS_SIZE , row*Board.CELLS_SIZE , 
-                                    (col+1)*Board.CELLS_SIZE , (row+1)*Board.CELLS_SIZE ,
-                                    outline='black', fill='',activefill='lightblue',activeoutline='darkgreen')
+                    self.create_rectangle(col*self.CELLS_SIZE , row*self.CELLS_SIZE , 
+                                    (col+1)*self.CELLS_SIZE , (row+1)*self.CELLS_SIZE ,
+                                    outline='', fill='',activefill='lightblue',activeoutline='darkgreen')
 
     def _on_click(self,event:Event):
-        print(f'{event.y // Board.CELLS_SIZE}: {event.x // Board.CELLS_SIZE}')
-        col = event.x // Board.CELLS_SIZE
-        row = event.y // Board.CELLS_SIZE
+        print(f'{event.y // self.CELLS_SIZE}: {event.x // self.CELLS_SIZE}')
+        col = event.x // self.CELLS_SIZE
+        row = event.y // self.CELLS_SIZE
 
         if self.cells[row][col].is_alive(): 
             self.set_state_at_specific(row,col,Cell.State.Dead)

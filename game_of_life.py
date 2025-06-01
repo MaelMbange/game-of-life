@@ -9,7 +9,7 @@ from cell import Cell
 class GameOfLife(Frame):    
     PADX = 5
 
-    def __init__(self, master=None,rows=100,cols=100):
+    def __init__(self, master=None,rows=100,cols=100,cell_size=15):
         if master is None:
             master = Tk()
             master.title("Game of life")
@@ -19,7 +19,7 @@ class GameOfLife(Frame):
         self.isRunning: bool = False        
         
         self._create_control_frame()
-        self._create_board(rows,cols)
+        self._create_board(rows,cols,cell_size)
 
         self.pack()
 
@@ -46,8 +46,8 @@ class GameOfLife(Frame):
 
         control_frame.pack()
 
-    def _create_board(self,rows,cols):
-        self.board = Board(self, rows=rows,cols=cols)
+    def _create_board(self,rows,cols,cell_size):
+        self.board = Board(self, rows=rows,cols=cols,cell_size=cell_size)
         self.board.pack()
 
     def start_stop(self):
@@ -58,9 +58,6 @@ class GameOfLife(Frame):
             
             self.button_random.config(state=ACTIVE)
             self.button_clear.config(state=ACTIVE)
-
-            if self.timer is not None:
-                self.timer.cancel()
         else:
             print('start clicked')
             self.isRunning = True
@@ -68,25 +65,29 @@ class GameOfLife(Frame):
 
             self.button_random.config(state=DISABLED)
             self.button_clear.config(state=DISABLED)
-            self.next_step()
+            self.animate()
 
     def next_step(self):
         print('next clicked')
         self.board.calculate_next_state()
         self.board.show()
+
+    def animate(self):        
+        self.board.calculate_next_state()
+        self.board.show()
         if self.isRunning:
             delay = int(self.get_speed())
-            self.after(delay, self.next_step)
+            self.after(delay, self.animate)
 
     def get_speed(self):
         current_speed = self.speed_box.get()
         match current_speed:
             case 'slow':
-                return 1000 * 1.5
+                return 1000 
             case 'fast':
-                return 1000 * 0.5
+                return 1
             case _:
-                return 1000
+                return 100
             
 
     def _clear(self):
@@ -106,4 +107,4 @@ class GameOfLife(Frame):
                     self.board.set_state_at_specific(row,col,Cell.State.Alive)
         self.board.show()   
 
-GameOfLife(rows=50,cols=50).mainloop()
+GameOfLife(rows=100,cols=100,cell_size=5).mainloop()
